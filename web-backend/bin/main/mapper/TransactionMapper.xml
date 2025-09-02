@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="redlib.backend.dao.TransactionMapper">
+    <resultMap id="BaseResultMap" type="redlib.backend.model.Transaction">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="item_id" property="itemId" jdbcType="INTEGER"/>
+        <result column="operation_type" property="operationType" jdbcType="VARCHAR"/>
+        <result column="quantity" property="quantity" jdbcType="INTEGER"/>
+        <result column="handler_id" property="handlerId" jdbcType="INTEGER"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="post_stock" property="postStock" jdbcType="INTEGER"/>
+        <result column="operation_time" property="operationTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    
+    <sql id="Base_Column_List">
+        t.id, t.item_id, t.operation_type, t.quantity, t.handler_id, t.remark, t.post_stock, t.operation_time
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        id, item_id, operation_type, quantity, handler_id, remark, post_stock, operation_time
+        from transactions
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <insert id="insert" parameterType="redlib.backend.model.Transaction" keyProperty="id" useGeneratedKeys="true">
+        insert into transactions (
+            item_id, operation_type, quantity, 
+            handler_id, remark, post_stock, operation_time
+        )
+        values (
+            #{itemId,jdbcType=INTEGER}, 
+            #{operationType,jdbcType=VARCHAR}, 
+            #{quantity,jdbcType=INTEGER}, 
+            #{handlerId,jdbcType=INTEGER},
+            #{remark,jdbcType=VARCHAR}, 
+            #{postStock,jdbcType=INTEGER}, 
+            #{operationTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <!-- 获取出入库记录个数(分页) -->
+    <select id="count" resultType="integer">
+        SELECT COUNT(*)
+        FROM transactions t
+        INNER JOIN items i ON t.item_id = i.id
+        <where>
+            <if test="itemId != null">
+                t.item_id = #{itemId}
+            </if>
+            <if test="itemName != null">
+                AND i.name LIKE #{itemName}
+            </if>
+            <if test="itemNumber != null">
+                AND i.item_number LIKE #{itemNumber}
+            </if>
+            <if test="operationType != null">
+                AND t.operation_type = #{operationType}
+            </if>
+            <if test="startDate != null">
+                AND t.operation_time >= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND t.operation_time &lt;= #{endDate}
+            </if>
+        </where>
+    </select>
+
+    <!-- 获取出入库记录列表(分页) -->
+    <select id="list" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM transactions t
+        INNER JOIN items i ON t.item_id = i.id
+        <where>
+            <if test="queryDTO.itemId != null">
+                t.item_id = #{queryDTO.itemId}
+            </if>
+            <if test="queryDTO.itemName != null">
+                AND i.name LIKE #{queryDTO.itemName}
+            </if>
+            <if test="queryDTO.itemNumber != null">
+                AND i.item_number LIKE #{queryDTO.itemNumber}
+            </if>
+            <if test="queryDTO.operationType != null">
+                AND t.operation_type = #{queryDTO.operationType}
+            </if>
+            <if test="queryDTO.startDate != null">
+                AND t.operation_time >= #{queryDTO.startDate}
+            </if>
+            <if test="queryDTO.endDate != null">
+                AND t.operation_time &lt;= #{queryDTO.endDate}
+            </if>
+        </where>
+        ORDER BY t.operation_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <!-- 根据物品ID获取出入库记录 -->
+    <select id="listByItemId" resultMap="BaseResultMap">
+        SELECT
+        id, item_id, operation_type, quantity, handler_id, remark, post_stock, operation_time
+        FROM transactions
+        WHERE item_id = #{itemId}
+        ORDER BY operation_time DESC
+    </select>
+    
+    <!-- 更新所有记录中的操作类型 -->
+    <update id="updateAllOperationTypes">
+        UPDATE transactions
+        SET operation_type = CASE 
+            WHEN operation_type = '入库' THEN '1'
+            WHEN operation_type = '出库' THEN '0'
+            ELSE operation_type
+        END
+        WHERE operation_type IN ('入库', '出库')
+    </update>
+</mapper> 

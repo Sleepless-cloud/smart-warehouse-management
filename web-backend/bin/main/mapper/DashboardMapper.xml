@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="redlib.backend.dao.DashboardMapper">
+
+    <select id="countTotalItems" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM items
+    </select>
+
+    <select id="sumTotalStockQuantity" resultType="java.lang.Long">
+        SELECT COALESCE(SUM(stock_quantity), 0) FROM items
+    </select>
+
+    <select id="countLowStockItems" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM items WHERE stock_quantity &lt;= threshold
+    </select>
+
+    <select id="countTransactionsByDateRange" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM transactions
+        WHERE operation_time >= #{startDate} AND operation_time &lt; DATE_ADD(#{endDate}, INTERVAL 1 DAY)
+    </select>
+
+    <select id="listTopItemsByStock" resultType="java.util.Map">
+        SELECT name, stock_quantity AS quantity
+        FROM items
+        ORDER BY stock_quantity DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="countDailyTransactionsByType" resultType="java.util.Map">
+        SELECT
+            DATE(operation_time) AS date,
+            operation_type AS type,
+            COUNT(*) AS count
+        FROM transactions
+        WHERE operation_time >= #{startDate} AND operation_time &lt; DATE_ADD(#{endDate}, INTERVAL 1 DAY)
+        GROUP BY DATE(operation_time), operation_type
+        ORDER BY date, type
+    </select>
+
+    <resultMap id="ItemResultMap" type="redlib.backend.vo.ItemVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="item_number" property="itemNumber"/>
+        <result column="unit" property="unit"/>
+        <result column="specification" property="specification"/>
+        <result column="stock_quantity" property="stockQuantity"/>
+        <result column="threshold" property="threshold"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="operator_name" property="operatorName"/>
+    </resultMap>
+
+    <select id="listLowStockItems" resultMap="ItemResultMap">
+        SELECT
+            i.id, i.name, i.item_number, i.unit, i.specification,
+            i.stock_quantity, i.threshold, i.created_at, i.updated_at,
+            a.name AS operator_name
+        FROM items i
+        LEFT JOIN admin a ON i.operator_id = a.id
+        WHERE i.stock_quantity &lt;= i.threshold
+        ORDER BY i.stock_quantity ASC, i.updated_at DESC
+    </select>
+
+</mapper> 

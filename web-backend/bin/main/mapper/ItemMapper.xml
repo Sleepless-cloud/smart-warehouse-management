@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="redlib.backend.dao.ItemMapper">
+    <resultMap id="BaseResultMap" type="redlib.backend.model.Item">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="item_number" property="itemNumber" jdbcType="VARCHAR"/>
+        <result column="unit" property="unit" jdbcType="VARCHAR"/>
+        <result column="specification" property="specification" jdbcType="VARCHAR"/>
+        <result column="stock_quantity" property="stockQuantity" jdbcType="INTEGER"/>
+        <result column="threshold" property="threshold" jdbcType="INTEGER"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
+        <result column="operator_id" property="operatorId" jdbcType="INTEGER"/>
+    </resultMap>
+    
+    <sql id="Base_Column_List">
+        id, name, item_number, unit, specification, stock_quantity, threshold, created_at, updated_at, operator_id
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from items
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <insert id="insert" parameterType="redlib.backend.model.Item" keyProperty="id" useGeneratedKeys="true">
+        insert into items (
+            name, item_number, unit, specification, 
+            stock_quantity, threshold, created_at, 
+            updated_at, operator_id
+        )
+        values (
+            #{name,jdbcType=VARCHAR}, 
+            #{itemNumber,jdbcType=VARCHAR}, 
+            #{unit,jdbcType=VARCHAR}, 
+            #{specification,jdbcType=VARCHAR},
+            #{stockQuantity,jdbcType=INTEGER}, 
+            #{threshold,jdbcType=INTEGER}, 
+            #{createdAt,jdbcType=TIMESTAMP}, 
+            #{updatedAt,jdbcType=TIMESTAMP}, 
+            #{operatorId,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="redlib.backend.model.Item">
+        update items
+        set name = #{name,jdbcType=VARCHAR},
+            item_number = #{itemNumber,jdbcType=VARCHAR},
+            unit = #{unit,jdbcType=VARCHAR},
+            specification = #{specification,jdbcType=VARCHAR},
+            threshold = #{threshold,jdbcType=INTEGER},
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+            operator_id = #{operatorId,jdbcType=INTEGER}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    
+    <select id="getByItemNumber" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from items
+        where item_number = #{itemNumber,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 获取物品个数(分页) -->
+    <select id="count" resultType="integer">
+        select count(*)
+        from items
+        <where>
+            <if test="name != null">
+                name like #{name}
+            </if>
+            <if test="itemNumber != null">
+                AND item_number like #{itemNumber}
+            </if>
+        </where>
+    </select>
+
+    <!-- 获取物品列表(分页) -->
+    <select id="list" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from items
+        <where>
+            <if test="queryDTO.name != null">
+                name like #{queryDTO.name}
+            </if>
+            <if test="queryDTO.itemNumber != null">
+                AND item_number like #{queryDTO.itemNumber}
+            </if>
+        </where>
+        limit #{offset}, #{limit}
+    </select>
+
+    <!-- 批量删除物品 -->
+    <delete id="deleteByIds">
+        delete from items
+        where id in
+        <foreach item="item" index="index" collection="idList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    
+    <!-- 更新物品库存 -->
+    <update id="updateStock">
+        update items
+        set stock_quantity = stock_quantity + #{quantity,jdbcType=INTEGER},
+            updated_at = NOW()
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper> 
