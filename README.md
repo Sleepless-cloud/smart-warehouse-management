@@ -1,6 +1,6 @@
 # BityunCang - Intelligent Warehouse Management System
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 This project is developed by [@Steve2457](https://github.com/Steve2457) and [@Sleepless-cloud](https://github.com/Sleepless-cloud).
 
@@ -85,7 +85,7 @@ BityunCang is an intelligent warehouse management system designed to simplify wa
 
 # 比特云仓（BityunCang） - 智能仓库管理系统
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 该项目由[@Steve2457](https://github.com/Steve2457) 和 [@Sleepless-cloud](https://github.com/Sleepless-cloud)共同开发。
 
