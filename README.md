@@ -2,6 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+This project is developed by [@Steve2457](https://github.com/Steve2457) and [@Sleepless-cloud](https://github.com/Sleepless-cloud).
+
 BityunCang is an intelligent warehouse management system designed to simplify warehouse operations and improve management efficiency. Whether for small organizations or large logistics centers, BityunCang makes it easy to manage inventory, track item movement, and optimize warehouse operations.
 
 ![BityunCang Homepage](./screenshot/homepage.png)
@@ -84,6 +86,8 @@ BityunCang is an intelligent warehouse management system designed to simplify wa
 # 比特云仓（BityunCang） - 智能仓库管理系统
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+该项目由[@Steve2457](https://github.com/Steve2457) 和 [@Sleepless-cloud](https://github.com/Sleepless-cloud)共同开发。
 
 比特云仓（BityunCang）是一款智能仓库管理系统，旨在简化仓库操作，提高管理效率。无论是小型机构还是大型物流中心，您都可以通过比特云仓轻松管理库存、追踪物品流动，并优化仓库运营。
 
